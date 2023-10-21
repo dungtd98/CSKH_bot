@@ -1,0 +1,35 @@
+version: '3'
+services:
+  postgres-db:
+    container_name: chatbot-db
+    restart: always
+    image: postgres:lastest
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=chatbot_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres 
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  redis:
+    image: redis:lastest
+
+  django-backend:
+    container_name: chatbot-backend
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres-db
+      - redis
+    restart: always
+    ports:
+      - 8000:8000
+    env_file: .env-docker
+    volumes:
+      - .:/app
+
+volumes:
+  postgres_data:
+
